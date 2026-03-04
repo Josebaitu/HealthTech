@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,9 +23,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.healthtech.R
 import com.example.healthtech.ui.theme.HealthTechBlueTrack
+import com.example.healthtech.viewmodel.LaunchViewModel
+import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @Composable
-fun LaunchScreen() {
+fun LaunchScreen(navController: NavController, viewModel: LaunchViewModel = viewModel()) {
+    val destination by viewModel.navigateTo.collectAsState()
+
+    LaunchedEffect(destination) {
+        destination?.let { route ->
+            navController.navigate(route) {
+                popUpTo("launchScreen") { inclusive = true}
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

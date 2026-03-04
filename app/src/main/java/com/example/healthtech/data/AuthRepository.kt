@@ -15,5 +15,11 @@ class AuthRepository {
         }
     }
 
-    fun isUserLoggedIn(): Boolean = firebaseAuth.currentUser != null
+    fun getCurrentUser() {
+        firebaseAuth.currentUser
+    }
+
+    fun isUserLoggedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
 }

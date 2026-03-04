@@ -1,1 +1,10 @@
 /build
+# Firebase / Google Services
+app/google-services.json
+
+# Local configuration (claves de API locales)
+local.properties
+
+# Archivos de firmas (si llegas a crear uno)
+*.jks
+*.keystore
