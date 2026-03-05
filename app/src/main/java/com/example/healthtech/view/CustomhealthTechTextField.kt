@@ -1,6 +1,7 @@
 package com.example.healthtech.view
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -20,7 +21,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun CustomHealthTechTextField(
@@ -28,7 +31,9 @@ fun CustomHealthTechTextField(
     onValueChange: (String) -> Unit,
     label: String,
     isPassword: Boolean = false,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isError: Boolean = false,
+    errorMessage: String? = null
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -39,6 +44,7 @@ fun CustomHealthTechTextField(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         singleLine = true,
+        isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         visualTransformation = if (isPassword && !isPasswordVisible) {
             PasswordVisualTransformation()
@@ -60,4 +66,13 @@ fun CustomHealthTechTextField(
             }
         }
     )
+
+    if (isError && errorMessage != null) {
+        Text(
+            text = errorMessage,
+            color = MaterialTheme.colorScheme.error,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+        )
+    }
 }
