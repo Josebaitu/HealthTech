@@ -3,6 +3,7 @@ package com.example.healthtech.view
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,7 +22,9 @@ import androidx.compose.ui.unit.sp
 fun CustomHealthTechTopBar(
     title: String,
     showBackButton: Boolean = false,
+    showMenuButton: Boolean = false,
     onBackClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
@@ -29,7 +32,7 @@ fun CustomHealthTechTopBar(
             Text(
                 text = title,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.White,
                 fontSize = 20.sp,
 
             )
@@ -40,15 +43,19 @@ fun CustomHealthTechTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Volver",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Color.White
                     )
+                }
+            } else if (showMenuButton) {
+                IconButton(onClick = onMenuClick) {
+                    Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color.White)
                 }
             }
         },
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White,
-            titleContentColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = Color.White
         )
     )
 }
