@@ -142,6 +142,7 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
 
         CustomHealthTechButton(
             text = "Registrarse",
+            enabled = !viewModel.isLoading,
             onClick = {
                 when {
                     email.isBlank() || password.isBlank() || name.isBlank() -> {
@@ -165,8 +166,11 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
                     }
 
                     else -> {
-                        viewModel.registerUser(email, password) {
-                            navController.navigate(Routes.MainView)
+                        val completeName = "${name.trim()} ${surname.trim()}"
+                        viewModel.registerUser(email, password, nombre = completeName) {
+                            navController.navigate(Routes.MainView) {
+                                popUpTo(Routes.SignUp) { inclusive = true }
+                            }
                         }
                     }
                 }

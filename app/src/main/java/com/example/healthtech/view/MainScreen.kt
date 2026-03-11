@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,16 +47,23 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
-    val user = Firebase.auth.currentUser
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserData()
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Menu", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = if (viewModel.userName.isEmpty()) "Menú" else "Hola, ${viewModel.userName}",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.titleLarge
+                )
                 HorizontalDivider()
                 NavigationDrawerItem(
                     label = { Text("Ajustes") },
@@ -103,17 +111,9 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "¡Bienvenido de nuevo!",
+                    text = "Bienvenido, ${viewModel.userName}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = user?.email ?: "Usuario",
-                    color = Color.Gray,
-                    fontSize = 16.sp
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
