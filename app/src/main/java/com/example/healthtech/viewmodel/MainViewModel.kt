@@ -9,11 +9,15 @@ import com.google.firebase.ktx.Firebase
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.healthtech.data.MockData
+import com.example.healthtech.data.RegistroMedico
+
 class MainViewModel: ViewModel() {
     private val auth = Firebase.auth
     private val db = Firebase.firestore
 
     var userName by mutableStateOf("")
+    var recentActivityList by mutableStateOf(listOf<RegistroMedico>())
 
     fun fetchUserData() {
         val userId = auth.currentUser?.uid
@@ -25,9 +29,13 @@ class MainViewModel: ViewModel() {
                     }
                 }
                 .addOnFailureListener {
-                    userName = "Usuario" //En el caso de que falle que por defecto diga usuario en vez del nombre o algo
+                    userName = "Usuario"
                 }
         }
+    }
+
+    fun fetchUserActivityData() {
+        recentActivityList = MockData.getInventedInfo()
     }
 
     fun logout(onSuccess: () -> Unit) {
