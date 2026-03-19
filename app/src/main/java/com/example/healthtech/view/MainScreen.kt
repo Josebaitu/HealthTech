@@ -1,6 +1,7 @@
 package com.example.healthtech.view
 
 import android.R
+import android.graphics.Paint
 import androidx.compose.material3.ListItem
 import android.icu.number.Scale
 import android.os.Build
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.items
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -49,6 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,7 +74,6 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
 
     LaunchedEffect(Unit) {
         viewModel.fetchUserData()
-        viewModel.fetchUserActivityData()
     }
 
     ModalNavigationDrawer(
@@ -114,11 +117,14 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                     }
                 )
             },
+            bottomBar = {
+                CustomHealthTechBottomBar(navController)
+            },
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = { /*Navegación a pantalla de subir documento*/ },
+                    onClick = { navController.navigate(Routes.AddDocScreen) },
                     icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text("Añadir dato") },
+                    text = { Text("") },
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             }
@@ -186,14 +192,39 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                     )
                 }
 
-                item { Spacer(modifier = Modifier.height(8.dp)) }
-                /*Hardcodeo para simulación de registros con Mock*/
-                items(viewModel.recentActivityList) { registro ->
-                    RegisterRecentItem(
-                        titulo = registro.titulo,
-                        fecha = registro.fecha,
-                        origen = registro.origen
+                if (viewModel.recentActivityList.isEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillParentMaxHeight(0.7f)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Inbox,
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = Color.Gray
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Text(
+                                text = "No hay documentos subidos aún",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                } else {
+                    items(viewModel.recentActivityList) { record ->
+                        RegisterRecentItem(
+                            titulo = record.title,
+                            fecha = record.date,
+                            origen = record.source
                         )
+                    }
                 }
             }
         }

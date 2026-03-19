@@ -1,15 +1,21 @@
 package com.example.healthtech.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.healthtech.view.AddDocumentScreen
+import com.example.healthtech.view.ChatIAScreen
+import com.example.healthtech.view.ChatMedScreen
 import com.example.healthtech.view.ForgotPasswordScreen
 import com.example.healthtech.view.LaunchScreen
 import com.example.healthtech.view.LoginScreen
 import com.example.healthtech.view.MainScreen
 import com.example.healthtech.view.SignUpScreen
+import com.example.healthtech.viewmodel.AddDocumentViewModel
 import com.example.healthtech.viewmodel.ForgotPasswordViewModel
+import com.example.healthtech.viewmodel.MainViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
@@ -43,6 +49,18 @@ fun AppNavigation() {
 
         composable(Routes.ForgotPassword) {
             ForgotPasswordScreen(navController = navController)
+        }
+
+        composable(Routes.ChatIA) {
+            ChatIAScreen(navController = navController)
+        }
+
+        composable(Routes.ChatMed) {
+            ChatMedScreen(navController = navController)
+        }
+
+        composable(Routes.AddDocScreen) {
+            AddDocumentScreen(navController = navController)
         }
     }
 }

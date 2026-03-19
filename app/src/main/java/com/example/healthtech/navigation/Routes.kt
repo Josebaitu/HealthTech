@@ -6,4 +6,7 @@ object Routes {
     const val SignUp = "signUpScreen"
     const val MainView = "mainView"
     const val ForgotPassword = "forgotPassword"
+    const val ChatIA = "ChatIA"
+    const val ChatMed = "ChatMed"
+    const val AddDocScreen = "AddDocScreen"
 }

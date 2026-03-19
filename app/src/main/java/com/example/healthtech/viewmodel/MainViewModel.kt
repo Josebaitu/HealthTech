@@ -9,6 +9,7 @@ import com.google.firebase.ktx.Firebase
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.healthtech.data.MedicalRecord
 import com.example.healthtech.data.MockData
 import com.example.healthtech.data.RegistroMedico
 
@@ -17,7 +18,7 @@ class MainViewModel: ViewModel() {
     private val db = Firebase.firestore
 
     var userName by mutableStateOf("")
-    var recentActivityList by mutableStateOf(listOf<RegistroMedico>())
+    var recentActivityList by mutableStateOf(listOf<MedicalRecord>())
 
     fun fetchUserData() {
         val userId = auth.currentUser?.uid
@@ -34,8 +35,9 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun fetchUserActivityData() {
-        recentActivityList = MockData.getInventedInfo()
+    fun addNewRecord(newRecord: MedicalRecord) {
+        recentActivityList = listOf(newRecord) + recentActivityList
+
     }
 
     fun logout(onSuccess: () -> Unit) {
