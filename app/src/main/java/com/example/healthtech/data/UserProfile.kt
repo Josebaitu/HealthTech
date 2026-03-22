@@ -4,8 +4,8 @@ import kotlin.uuid.Uuid
 
 data class UserProfile(
     val uuid: String = "",
-    val nombre: String = "",
+    val name: String = "",
     val email: String = "",
-    val rol: String = "paciente",
-    val fechaCreacion: Long = System.currentTimeMillis()
+    val role: String = "paciente",
+    val creationDate: Long = System.currentTimeMillis()
 )

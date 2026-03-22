@@ -1,7 +1,9 @@
 package com.example.healthtech.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,6 +44,7 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
+    var selectedRole by remember { mutableStateOf("paciente") }
 
     Column(
         modifier = Modifier
@@ -128,6 +134,31 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        Text(
+            text = "Qué rol tienes?",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            RoleOption(
+                text = "Paciente",
+                isSelected = selectedRole == "paciente",
+                onSelect = { selectedRole = "paciente" }
+            )
+
+            RoleOption(
+                text = "Doctor",
+                isSelected = selectedRole == "doctor",
+                onSelect = { selectedRole = "doctor" }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
         if (viewModel.errorMessage.isNotEmpty()) {
             Text(
                 text = viewModel.errorMessage,
@@ -167,7 +198,7 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
 
                     else -> {
                         val completeName = "${name.trim()} ${surname.trim()}"
-                        viewModel.registerUser(email, password, nombre = completeName) {
+                        viewModel.registerUser(email, password, nombre = completeName, role = selectedRole) {
                             navController.navigate(Routes.MainView) {
                                 popUpTo(Routes.SignUp) { inclusive = true }
                             }
@@ -195,6 +226,25 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun RoleOption(text: String, isSelected: Boolean, onSelect: () -> Unit) {
+    Surface(
+        onClick = onSelect,
+        shape = RoundedCornerShape(12.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = Modifier.width(140.dp).height(48.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = text,
+                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+            )
         }
     }
 }

@@ -7,6 +7,7 @@ import android.icu.number.Scale
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.annotation.experimental.Experimental
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ModifierInfo
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -71,6 +73,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(navController: NavController, viewModel: MainViewModel = viewModel()) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.fetchUserData()
@@ -82,7 +85,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = if (viewModel.userName.isEmpty()) "Menú" else "Hola, ${viewModel.userName}",
+                    text = if (viewModel.userRole == "doctor") "Bienvenido, Dr.${viewModel.userName}" else "Hola, ${viewModel.userName}",
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.titleLarge
                 )
@@ -121,12 +124,14 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                 CustomHealthTechBottomBar(navController)
             },
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    onClick = { navController.navigate(Routes.AddDocScreen) },
-                    icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text("") },
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                if (viewModel.userRole == "paciente") {
+                    ExtendedFloatingActionButton(
+                        onClick = { navController.navigate(Routes.AddDocScreen) },
+                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                        text = { Text("") },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         ) { paddingValues ->
             LazyColumn(
@@ -184,6 +189,17 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
 
                 item { Spacer(modifier = Modifier.height(80.dp)) }
 
+                if (viewModel.userRole == "doctor") {
+                    item {
+                        CustomHealthTechTextField(
+                            value = viewModel.searchQuery,
+                            onValueChange = { viewModel.searchQuery = it },
+                            label = "Buscar por paciente"
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
                 item {
                     Text(
                         text = "Actividad reciente",
@@ -192,7 +208,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                     )
                 }
 
-                if (viewModel.recentActivityList.isEmpty()) {
+                if (viewModel.filteredActivityList.isEmpty()) {
                     item {
                         Column(
                             modifier = Modifier
@@ -218,11 +234,14 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                         }
                     }
                 } else {
-                    items(viewModel.recentActivityList) { record ->
+                    items(viewModel.filteredActivityList) { record ->
                         RegisterRecentItem(
                             titulo = record.title,
                             fecha = record.date,
-                            origen = record.source
+                            origen = record.source,
+                            onClick = {
+                                viewModel.openDocument(context, record.fileUrl)
+                            }
                         )
                     }
                 }
@@ -264,9 +283,10 @@ fun HealthCard(nombre: String, color: Color, modifier: Modifier) {
 }
 
 @Composable
-fun RegisterRecentItem(titulo: String, fecha: String, origen: String) {
+fun RegisterRecentItem(titulo: String, fecha: String, origen: String, onClick: () -> Unit) {
     ListItem(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .clickable { onClick() },
         headlineContent = { Text(titulo, style = MaterialTheme.typography.bodyLarge) },
         supportingContent = { Text("$origen • $fecha", style = MaterialTheme.typography.bodyLarge) },
         leadingContent = {

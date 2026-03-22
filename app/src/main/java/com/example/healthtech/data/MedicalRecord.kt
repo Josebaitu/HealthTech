@@ -8,5 +8,10 @@ data class MedicalRecord(
     val title: String,
     val date: String,
     val source: String,
-    val fileUri: Uri? = null
-)
+    val patientName: String,
+    val fileUrl: String,
+    val patientId: String,
+    val doctorId: String
+) {
+    constructor() : this("", "", "", "", "", "", "", "")
+}

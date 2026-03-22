@@ -8,14 +8,22 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.healthtech.data.MedicalRecord
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
 class AddDocumentViewModel: ViewModel() {
+    private val storage = Firebase.storage.reference
+    private val db = Firebase.firestore
+    private val auth = Firebase.auth
     var reportTitle by mutableStateOf("")
     var doctorName by mutableStateOf("")
     var selectedUri by mutableStateOf<Uri?>(null)
@@ -29,25 +37,41 @@ class AddDocumentViewModel: ViewModel() {
         return reportTitle.isNotBlank() && doctorName.isNotBlank() && selectedUri != null
     }
 
-    fun saveDocument(onSuccess: (MedicalRecord) -> Unit) {
-        if (isFormValid()) {
+    fun saveDocument(patientName: String, onSuccess: (MedicalRecord) -> Unit) {
+        if (isFormValid() && selectedUri != null) {
             isUploading = true
             val calendar = Calendar.getInstance()
             val formatter = SimpleDateFormat("dd MM yyyy", Locale.getDefault())
             val formattedDate = formatter.format(calendar.time)
 
-            val newRecord = MedicalRecord(
-                id = UUID.randomUUID().toString(),
-                title = reportTitle,
-                date = formattedDate,
-                source = "Dr. $doctorName",
-                fileUri = selectedUri
-            )
-
             viewModelScope.launch {
-                delay(1000)
-                isUploading = false
-                onSuccess(newRecord)
+                try {
+                    val fileRef = storage.child("documents/${UUID.randomUUID()}.pdf")
+                    fileRef.putFile(selectedUri!!).await()
+                    val downloadUrl = fileRef.downloadUrl.await()
+
+                    val newRecord = MedicalRecord(
+                        id = UUID.randomUUID().toString(),
+                        title = reportTitle,
+                        date = formattedDate,
+                        source = "Dr. $doctorName",
+                        patientName = patientName,
+                        fileUrl = downloadUrl.toString(),
+                        patientId = Firebase.auth.currentUser?.uid ?: "",
+                        doctorId = ""
+                    )
+
+                    db.collection("medical_records")
+                        .document(newRecord.id)
+                        .set(newRecord)
+                        .await()
+
+                    isUploading = false
+                    onSuccess(newRecord)
+                } catch (e: Exception) {
+                    isUploading = false
+                    e.printStackTrace()
+                }
             }
         }
     }

@@ -107,7 +107,7 @@ fun AddDocumentScreen( navController: NavController, mainViewModel: MainViewMode
 
             Button(
                 onClick = {
-                    viewModel.saveDocument { newRecord ->
+                    viewModel.saveDocument(patientName = mainViewModel.userName) { newRecord ->
                         mainViewModel.addNewRecord(newRecord)
                         navController.popBackStack()
                     }
