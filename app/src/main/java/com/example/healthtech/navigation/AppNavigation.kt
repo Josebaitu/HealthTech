@@ -12,6 +12,8 @@ import com.example.healthtech.view.ForgotPasswordScreen
 import com.example.healthtech.view.LaunchScreen
 import com.example.healthtech.view.LoginScreen
 import com.example.healthtech.view.MainScreen
+import com.example.healthtech.view.ProfileScreen
+import com.example.healthtech.view.SettingsScreen
 import com.example.healthtech.view.SignUpScreen
 import com.example.healthtech.viewmodel.AddDocumentViewModel
 import com.example.healthtech.viewmodel.ForgotPasswordViewModel
@@ -61,6 +63,14 @@ fun AppNavigation() {
 
         composable(Routes.AddDocScreen) {
             AddDocumentScreen(navController = navController)
+        }
+
+        composable(Routes.SettingsScreen) {
+            SettingsScreen(navController = navController)
+        }
+
+        composable(Routes.ProfileScreen) {
+            ProfileScreen(navController = navController)
         }
     }
 }

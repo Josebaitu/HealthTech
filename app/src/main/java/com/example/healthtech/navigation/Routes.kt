@@ -9,4 +9,6 @@ object Routes {
     const val ChatIA = "ChatIA"
     const val ChatMed = "ChatMed"
     const val AddDocScreen = "AddDocScreen"
+    const val SettingsScreen = "Settings"
+    const val ProfileScreen = "Profile"
 }

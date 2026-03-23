@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "242133128346",
+    "project_id": "healthtech-63a46",
+    "storage_bucket": "healthtech-63a46.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242133128346:android:63fbd4bd7669c71c2abb23",
+        "android_client_info": {
+          "package_name": "com.jsb.healthtech"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242133128346-epu6ctpl8uhco82glbedn9lpljlgf6s3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsb.healthtech",
+            "certificate_hash": "414fff1d8b833b5a24a850a1e2d3e7894489666d"
+          }
+        },
+        {
+          "client_id": "242133128346-0ntjhit6vv5h3n9p95r1q2t6jv140t7u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtGOjdiOmU8GN8xBlpC4UgGx9Z8bPHQFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242133128346-0ntjhit6vv5h3n9p95r1q2t6jv140t7u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

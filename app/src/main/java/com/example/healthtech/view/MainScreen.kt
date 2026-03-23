@@ -93,7 +93,22 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                 NavigationDrawerItem(
                     label = { Text("Ajustes") },
                     selected = false,
-                    onClick = { /*Ajustes generales de la app*/ }
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            navController.navigate(Routes.SettingsScreen)
+                        }
+                    }
+                )
+                NavigationDrawerItem(
+                    label = { Text("Perfil") },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            navController.navigate(Routes.ProfileScreen)
+                        }
+                    }
                 )
                 NavigationDrawerItem(
                     label = { Text("Cerrar Sesión") },
@@ -187,7 +202,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(80.dp)) }
+                item { Spacer(modifier = Modifier.height(30.dp)) }
 
                 if (viewModel.userRole == "doctor") {
                     item {

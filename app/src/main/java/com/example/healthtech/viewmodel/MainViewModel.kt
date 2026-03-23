@@ -48,8 +48,8 @@ class MainViewModel: ViewModel() {
                 .addOnSuccessListener { document ->
                     if (document.exists() && document != null) {
                         userProfile = document.toObject(UserProfile::class.java)
-                        userName = userProfile?.name ?: "Usuario"
-                        userRole = userProfile?.role ?: "paciente"
+                        userName = userProfile?.nombre ?: "Usuario"
+                        userRole = userProfile?.rol ?: "paciente"
 
                         if (userRole == "paciente") {
                             fetchPatientRecords(userId)
