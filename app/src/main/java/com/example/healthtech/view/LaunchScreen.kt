@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.healthtech.navigation.Routes
 
 @Composable
 fun LaunchScreen(navController: NavController, viewModel: LaunchViewModel = viewModel()) {
@@ -37,7 +38,7 @@ fun LaunchScreen(navController: NavController, viewModel: LaunchViewModel = view
     LaunchedEffect(destination) {
         destination?.let { route ->
             navController.navigate(route) {
-                popUpTo("launchScreen") { inclusive = true}
+                popUpTo(Routes.Launch) { inclusive = true}
             }
         }
     }

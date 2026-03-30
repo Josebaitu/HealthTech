@@ -24,7 +24,6 @@ class SignUpViewModel: ViewModel() {
     private val db: FirebaseFirestore = Firebase.firestore
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
-    var selectedRole by mutableStateOf("paciente")
 
     fun registerUser(email: String, password: String, nombre: String, role: String, onSuccess: () -> Unit) {
         isLoading = true
@@ -39,9 +38,9 @@ class SignUpViewModel: ViewModel() {
                     if (userId != null) {
                         val nuevoUsuario = UserProfile(
                             uuid = userId,
-                            name = nombre,
+                            nombre = nombre,
                             email = email,
-                            role = selectedRole
+                            rol = role
                         )
 
                         db.collection("users").document(userId)

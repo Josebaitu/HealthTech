@@ -2,10 +2,13 @@ package com.example.healthtech.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.healthtech.view.AddDocumentScreen
+import com.example.healthtech.view.ChatDetailScreen
 import com.example.healthtech.view.ChatIAScreen
 import com.example.healthtech.view.ChatMedScreen
 import com.example.healthtech.view.ForgotPasswordScreen
@@ -25,8 +28,9 @@ import com.google.firebase.auth.auth
 fun AppNavigation() {
     //Va a ser lo que controla la navegaicon de la app
     val navController = rememberNavController()
+    val mainViewModel: MainViewModel = viewModel()
     val currentUser = Firebase.auth.currentUser
-    val startRoute = if (currentUser != null) Routes.MainView else Routes.Login //Uso operador ternario para tener el código en una sola linea
+    val startRoute = if (currentUser != null) Routes.MainView else Routes.Login
 
     //El NavHost tiene todas las rutas de las vistas de la aopp
     NavHost(
@@ -46,7 +50,10 @@ fun AppNavigation() {
         }
 
         composable(Routes.MainView) {
-            MainScreen(navController = navController)
+            MainScreen(
+                navController = navController,
+                viewModel = mainViewModel
+            )
         }
 
         composable(Routes.ForgotPassword) {
@@ -58,7 +65,24 @@ fun AppNavigation() {
         }
 
         composable(Routes.ChatMed) {
-            ChatMedScreen(navController = navController)
+            ChatMedScreen(
+                navController = navController,
+                mainViewModel = mainViewModel
+            )
+        }
+
+        composable(
+            "chat_detail/{chatId}",
+            arguments = listOf(
+                navArgument("chatId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
+            ChatDetailScreen(
+                navController = navController,
+                mainViewModel = mainViewModel,
+                chatId = chatId
+            )
         }
 
         composable(Routes.AddDocScreen) {

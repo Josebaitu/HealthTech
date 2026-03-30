@@ -117,7 +117,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = viewMo
                 text = "Iniciar Sesión",
                 onClick = {
                     viewModel.loginUser(email, password) {
-                        navController.navigate("mainView") {
+                        navController.navigate(Routes.MainView) {
                             popUpTo(Routes.Login) { inclusive = true }
                         }
                     }
@@ -139,7 +139,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = viewMo
                 )
 
                 TextButton(onClick = {
-                    navController.navigate("signUpScreen")
+                    navController.navigate(Routes.SignUp)
                 }) {
                     Text(
                         text = "Regístrate",
