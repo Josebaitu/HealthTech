@@ -7,10 +7,12 @@ import android.icu.number.Scale
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.annotation.experimental.Experimental
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -45,6 +50,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -57,14 +63,17 @@ import androidx.compose.ui.layout.ModifierInfo
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.healthtech.data.UserProfile
 import com.example.healthtech.navigation.Routes
 import com.example.healthtech.viewmodel.MainViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.auth.User
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
@@ -215,6 +224,62 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                     }
                 }
 
+                if (viewModel.userRole == "paciente") {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Tus Doctores",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    if (viewModel.doctorList.isEmpty()) {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillParentMaxHeight(0.1f)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Text(
+                                    text = "No tienes doctores aún",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) {
+                            items(viewModel.doctorList) { doctor ->
+                                DoctorList(doctor = doctor) {
+                                    navController.navigate(Routes.bookAppointmentRoute(doctor.uuid))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+
                 item {
                     Text(
                         text = "Actividad reciente",
@@ -227,7 +292,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                     item {
                         Column(
                             modifier = Modifier
-                                .fillParentMaxHeight(0.7f)
+                                .fillParentMaxHeight(0.2f)
                                 .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -311,4 +376,32 @@ fun RegisterRecentItem(titulo: String, fecha: String, origen: String, onClick: (
             Icon(Icons.Default.ChevronRight, contentDescription = null)
         }
     )
+}
+
+@Composable
+fun DoctorList(doctor: UserProfile, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.width(150.dp).padding(end = 12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier.size(50.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(doctor.nombre.take(1), fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(doctor.nombre, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text("Especialidad", fontSize = 12.sp, color = Color.Gray)
+        }
+    }
 }

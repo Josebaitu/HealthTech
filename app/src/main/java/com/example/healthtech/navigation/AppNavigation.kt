@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.healthtech.view.AddDocumentScreen
+import com.example.healthtech.view.BookAppointmentScreen
 import com.example.healthtech.view.ChatDetailScreen
 import com.example.healthtech.view.ChatIAScreen
 import com.example.healthtech.view.ChatMedScreen
@@ -72,7 +73,7 @@ fun AppNavigation() {
         }
 
         composable(
-            "chat_detail/{chatId}",
+            Routes.ChatDetail,
             arguments = listOf(
                 navArgument("chatId") { type = NavType.StringType }
             )
@@ -82,6 +83,20 @@ fun AppNavigation() {
                 navController = navController,
                 mainViewModel = mainViewModel,
                 chatId = chatId
+            )
+        }
+
+        composable(
+            Routes.BookAppointment,
+            arguments = listOf(
+                navArgument("doctorId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: ""
+            BookAppointmentScreen(
+                navController = navController,
+                mainViewModel = mainViewModel,
+                doctorId = doctorId
             )
         }
 

@@ -108,14 +108,9 @@ fun ChatMedScreen(navController: NavController, mainViewModel: MainViewModel = v
                             val myProfile = mainViewModel.userProfile
 
                             if (myProfile != null && myProfile.uuid.isNotEmpty()) {
-                                println("✅ Perfil detectado, iniciando chat...")
                                 viewModel.startChat(myProfile, user) { chatId ->
-                                    navController.navigate("chat_detail/$chatId")
+                                    navController.navigate(Routes.chatDetailRoute(chatId))
                                 }
-                            } else {
-                                // 2. Si está vacío, lanzamos un log de diagnóstico
-                                println("❌ ERROR CRÍTICO: userProfile es ${if (myProfile == null) "NULO" else "VACÍO"}")
-                                // Opcional: podrías intentar recargar el perfil aquí si sabes el UID de Firebase
                             }
                         }
                     }
@@ -132,7 +127,7 @@ fun ChatMedScreen(navController: NavController, mainViewModel: MainViewModel = v
                                 chat = chat,
                                 isDoctor = mainViewModel.userRole == "doctor",
                                 onClick = {
-                                    navController.navigate("chat_detail/${chat.id}")
+                                    navController.navigate(Routes.chatDetailRoute(chat.id))
                                 }
                             )
                         }

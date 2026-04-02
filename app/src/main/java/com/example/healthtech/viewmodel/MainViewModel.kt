@@ -4,19 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.healthtech.data.MedicalRecord
-import com.example.healthtech.data.MockData
-import com.example.healthtech.data.RegistroMedico
 import com.example.healthtech.data.UserProfile
 
 class MainViewModel: ViewModel() {
@@ -28,6 +23,7 @@ class MainViewModel: ViewModel() {
     var userRole by mutableStateOf("")
     var recentActivityList by mutableStateOf(listOf<MedicalRecord>())
     var searchQuery by mutableStateOf("")
+    var doctorList by mutableStateOf<List<UserProfile>>(emptyList())
 
     val filteredActivityList: List<MedicalRecord>
         get() {
@@ -53,6 +49,7 @@ class MainViewModel: ViewModel() {
 
                         if (userRole == "paciente") {
                             fetchPatientRecords(userId)
+                            fetchDoctors()
                         }
                     }
                 }
@@ -84,6 +81,31 @@ class MainViewModel: ViewModel() {
                 Log.e("MainViewModel", "Error al abrir el documento: ${e.message}")
             }
         }
+    }
+
+    fun fetchDoctors() {
+        val myId = auth.currentUser?.uid ?: return
+
+        db.collection("chats")
+            .whereArrayContains("participants", myId)
+            .limit(5)
+            .get()
+            .addOnSuccessListener { result ->
+                val doctorIds = result.documents.mapNotNull { doc ->
+                    val participants = doc.get("participants") as? List<String>
+                    participants?.firstOrNull { it != myId }
+                }
+
+                if (doctorIds.isNotEmpty()) {
+                    db.collection("users")
+                        .whereIn("uuid", doctorIds)
+                        .get()
+                        .addOnSuccessListener { doctorResult ->
+                            doctorList = doctorResult.toObjects(UserProfile::class.java)
+                            println("DEBUG: Doctores recuperados de la tabla users: ${doctorResult.size()}")
+                        }
+                }
+            }
     }
 
     fun addNewRecord(newRecord: MedicalRecord) {

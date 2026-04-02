@@ -8,9 +8,12 @@ object Routes {
     const val ForgotPassword = "ForgotPassword"
     const val ChatIA = "ChatIA"
     const val ChatMed = "ChatMed"
-    const val ChatDetail = "ChatDetail"
+    const val ChatDetail = "chat_detail/{chatId}"
     const val AddDocScreen = "AddDocScreen"
     const val SettingsScreen = "Settings"
     const val ProfileScreen = "Profile"
+    const val BookAppointment = "book_appointment/{doctorId}"
 
+    fun chatDetailRoute(chatId: String) = "chat_detail/$chatId"
+    fun bookAppointmentRoute(doctorId: String) = "book_appointment/$doctorId"
 }
