@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.healthtech.data.UserProfile
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.auth.User
@@ -71,7 +72,18 @@ class ChatMedViewModel: ViewModel() {
         db.collection("chats").document(chatId)
             .set(newChat, SetOptions.merge())
             .addOnSuccessListener {
-                onComplete(chatId)
+                if (currentUser.rol == "paciente") {
+                    db.collection("users").document(currentUser.uuid)
+                        .update("myDoctors", FieldValue.arrayUnion(targetUser.uuid))
+                        .addOnSuccessListener {
+                            onComplete(chatId)
+                        }
+                        .addOnFailureListener {
+                            onComplete(chatId)
+                        }
+                } else {
+                    onComplete(chatId)
+                }
             }
     }
 }

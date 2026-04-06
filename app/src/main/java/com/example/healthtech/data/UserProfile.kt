@@ -7,5 +7,6 @@ data class UserProfile(
     val nombre: String = "",
     val email: String = "",
     val rol: String = "paciente",
-    val fechaCreacion: Long = System.currentTimeMillis()
+    val fechaCreacion: Long = System.currentTimeMillis(),
+    val myDoctors: List<String> = emptyList()
 )

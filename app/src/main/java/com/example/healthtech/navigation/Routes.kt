@@ -14,6 +14,7 @@ object Routes {
     const val ProfileScreen = "Profile"
     const val BookAppointment = "book_appointment/{doctorId}"
 
+    const val AppointmentsScreen = "AppointmentsScreen"
     fun chatDetailRoute(chatId: String) = "chat_detail/$chatId"
     fun bookAppointmentRoute(doctorId: String) = "book_appointment/$doctorId"
 }

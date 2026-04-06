@@ -1,6 +1,7 @@
 package com.example.healthtech.view
 
 import android.graphics.Paint
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -18,6 +19,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -46,8 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlin.concurrent.timer
 
 @Composable
 fun BookAppointmentScreen(navController: NavController, mainViewModel: MainViewModel, doctorId: String, viewModel: BookAppointmentViewModel = viewModel()) {
@@ -60,6 +62,35 @@ fun BookAppointmentScreen(navController: NavController, mainViewModel: MainViewM
     LaunchedEffect(doctorId) {
         viewModel.loadDoctor(doctorId)
     }
+
+    CustomHealthTechAlertDialog(
+        show = viewModel.showSuccessDialog,
+        title = "¡Cita registrada!",
+        text = "Tu cita con el Dr.${viewModel.doctorInfo?.nombre} se ha registrado con éxito.",
+        isError = false,
+        onConfirm = {
+            viewModel.showSuccessDialog = false
+            navController.popBackStack()
+        }
+    )
+
+    CustomHealthTechAlertDialog(
+        show = viewModel.showErrorDialog,
+        title = "¡Ups Algo ha fallado!",
+        text = "No hemos podido registrar tu cita debido a un error. Por favor inténtelo de nuevo más tarde.",
+        isError = true,
+        confirmText = "Reintentar",
+        onConfirm = {
+            viewModel.showErrorDialog = false
+            val patientId = mainViewModel.userProfile?.uuid ?: ""
+            val patientName = mainViewModel.userProfile?.nombre ?: ""
+
+            viewModel.confirmBooking(patientId, patientName)
+                    },
+        onDismiss = {
+            viewModel.showErrorDialog = false
+        }
+    )
 
     Scaffold(
         topBar = {
@@ -148,7 +179,8 @@ fun BookAppointmentScreen(navController: NavController, mainViewModel: MainViewM
             Text("Selecciona la hora", fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
 
             FlowRow(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 viewModel.availableTimes.forEach { time ->
                     val isSelected = viewModel.selectedTime == time
@@ -169,9 +201,10 @@ fun BookAppointmentScreen(navController: NavController, mainViewModel: MainViewM
             CustomHealthTechButton(
                 text = "Confirmar Cita",
                 onClick = {
-                    viewModel.confirmBooking(mainViewModel.userProfile?.uuid ?: "") {
-                        navController.popBackStack()
-                    }
+                    val patientId = mainViewModel.userProfile?.uuid ?: ""
+                    val patientName = mainViewModel.userProfile?.nombre ?: ""
+
+                    viewModel.confirmBooking(patientId, patientName)
                 },
                 enabled = viewModel.selectedTime != null && viewModel.selectedDate != null,
                 isLoading = viewModel.isBooking

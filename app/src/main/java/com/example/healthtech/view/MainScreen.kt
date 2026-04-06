@@ -1,12 +1,6 @@
 package com.example.healthtech.view
 
-import android.R
-import android.graphics.Paint
 import androidx.compose.material3.ListItem
-import android.icu.number.Scale
-import android.os.Build
-import androidx.annotation.RequiresExtension
-import androidx.annotation.experimental.Experimental
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,14 +20,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -71,10 +61,6 @@ import androidx.navigation.NavController
 import com.example.healthtech.data.UserProfile
 import com.example.healthtech.navigation.Routes
 import com.example.healthtech.viewmodel.MainViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.auth.User
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -243,7 +229,15 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                         }
                     }
 
-                    if (viewModel.doctorList.isEmpty()) {
+                    item {
+                        CustomHealthTechTextField(
+                            value = viewModel.doctorSearchQuery,
+                            onValueChange = { viewModel.doctorSearchQuery = it },
+                            label = "Buscar médicos"
+                        )
+                    }
+
+                    if (viewModel.displayDoctors.isEmpty()) {
                         item {
                             Column(
                                 modifier = Modifier
@@ -256,7 +250,10 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                                 Spacer(modifier = Modifier.height(16.dp))
 
                                 Text(
-                                    text = "No tienes doctores aún",
+                                    text = if (viewModel.doctorSearchQuery.isEmpty())
+                                        "No tienes doctores aún"
+                                    else
+                                        "No se encontraron doctores con ese nombre",
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = Color.Gray
                                 )
@@ -271,6 +268,9 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                         ) {
                             items(viewModel.doctorList) { doctor ->
                                 DoctorList(doctor = doctor) {
+                                    if (viewModel.doctorSearchQuery.isNotEmpty()) {
+                                        viewModel.addDoctorToList(doctor.uuid)
+                                    }
                                     navController.navigate(Routes.bookAppointmentRoute(doctor.uuid))
                                 }
                             }

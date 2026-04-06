@@ -116,7 +116,7 @@ fun ChatMedScreen(navController: NavController, mainViewModel: MainViewModel = v
                     }
                 }
             } else {
-                if (viewModel.chatList.isEmpty() && !viewModel.isLoading) {
+                if (viewModel.chatList.isEmpty()) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("No tienes conversaciones aún", color = Color.Gray)
                     }

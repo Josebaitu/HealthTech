@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.healthtech.data.MedicalRecord
 import com.example.healthtech.data.UserProfile
+import com.google.firebase.firestore.FieldValue
 
 class MainViewModel: ViewModel() {
     private val auth = Firebase.auth
@@ -23,7 +24,9 @@ class MainViewModel: ViewModel() {
     var userRole by mutableStateOf("")
     var recentActivityList by mutableStateOf(listOf<MedicalRecord>())
     var searchQuery by mutableStateOf("")
+    var doctorSearchQuery by mutableStateOf("")
     var doctorList by mutableStateOf<List<UserProfile>>(emptyList())
+    var allDoctorsList by mutableStateOf<List<UserProfile>>(emptyList())
 
     val filteredActivityList: List<MedicalRecord>
         get() {
@@ -33,6 +36,17 @@ class MainViewModel: ViewModel() {
                 recentActivityList.filter { record ->
                     record.title.contains(searchQuery, ignoreCase = true) ||
                     record.source.contains(searchQuery, ignoreCase = true)
+                }
+            }
+        }
+
+    val displayDoctors: List<UserProfile>
+        get() {
+            return if (doctorSearchQuery.isEmpty()) {
+                doctorList
+            } else {
+                allDoctorsList.filter {
+                    it.nombre.contains(doctorSearchQuery, ignoreCase = true)
                 }
             }
         }
@@ -50,6 +64,7 @@ class MainViewModel: ViewModel() {
                         if (userRole == "paciente") {
                             fetchPatientRecords(userId)
                             fetchDoctors()
+                            fetchAllDoctors()
                         }
                     }
                 }
@@ -86,25 +101,53 @@ class MainViewModel: ViewModel() {
     fun fetchDoctors() {
         val myId = auth.currentUser?.uid ?: return
 
-        db.collection("chats")
-            .whereArrayContains("participants", myId)
-            .limit(5)
-            .get()
+        db.collection("users").document(myId).get()
+            .addOnSuccessListener { document ->
+                val profile = document.toObject(UserProfile::class.java)
+                val myDoctorIds = profile?.myDoctors?.filter { it.isNotEmpty() } ?: emptyList()
+
+                if (myDoctorIds.isNotEmpty()) {
+                    db.collection("users")
+                        .whereIn("uuid", myDoctorIds).get()
+                        .addOnSuccessListener { result ->
+                            doctorList = result.toObjects(UserProfile::class.java)
+                        }
+                } else {
+                    doctorList = emptyList()
+                }
+            }
+    }
+
+    fun fetchAllDoctors() {
+        db.collection("users")
+            .whereEqualTo("rol", "doctor").get()
+            .addOnSuccessListener {
+                allDoctorsList = it.toObjects(UserProfile::class.java)
+            }
+    }
+
+    fun searchDoctors(query: String, onResult: (List<UserProfile>) -> Unit) {
+        db.collection("users")
+            .whereEqualTo("rol", "doctor").get()
             .addOnSuccessListener { result ->
-                val doctorIds = result.documents.mapNotNull { doc ->
-                    val participants = doc.get("participants") as? List<String>
-                    participants?.firstOrNull { it != myId }
+                val allDoctors = result.toObjects(UserProfile::class.java)
+                val filteredDoctors = allDoctors.filter {
+                    it.nombre.contains(query, ignoreCase = true)
                 }
 
-                if (doctorIds.isNotEmpty()) {
-                    db.collection("users")
-                        .whereIn("uuid", doctorIds)
-                        .get()
-                        .addOnSuccessListener { doctorResult ->
-                            doctorList = doctorResult.toObjects(UserProfile::class.java)
-                            println("DEBUG: Doctores recuperados de la tabla users: ${doctorResult.size()}")
-                        }
-                }
+                onResult(filteredDoctors)
+            }
+    }
+
+    fun addDoctorToList(doctorId: String) {
+        val myId = auth.currentUser?.uid ?: return
+        if (doctorId.isEmpty()) return
+
+        db.collection("users").document(myId)
+            .update("myDoctors", FieldValue.arrayUnion(doctorId))
+            .addOnSuccessListener {
+                fetchDoctors()
+                doctorSearchQuery = ""
             }
     }
 

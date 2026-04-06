@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.healthtech.view.AddDocumentScreen
+import com.example.healthtech.view.AppointmentsScreen
 import com.example.healthtech.view.BookAppointmentScreen
 import com.example.healthtech.view.ChatDetailScreen
 import com.example.healthtech.view.ChatIAScreen
@@ -110,6 +111,10 @@ fun AppNavigation() {
 
         composable(Routes.ProfileScreen) {
             ProfileScreen(navController = navController)
+        }
+
+        composable(Routes.AppointmentsScreen) {
+            AppointmentsScreen(navController = navController, mainViewModel = mainViewModel)
         }
     }
 }

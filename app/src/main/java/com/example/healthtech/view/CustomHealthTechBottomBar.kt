@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -37,6 +38,17 @@ fun CustomHealthTechBottomBar(navController: NavController) {
                     navController.navigate(Routes.MainView) {
                         popUpTo(Routes.MainView) { inclusive = true }
                     }
+                }
+            }
+        )
+
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Event, contentDescription = null) },
+            label = { Text("Citas") },
+            selected = currentRoute == Routes.AppointmentsScreen,
+            onClick = {
+                if (currentRoute != Routes.AppointmentsScreen) {
+                    navController.navigate(Routes.AppointmentsScreen)
                 }
             }
         )

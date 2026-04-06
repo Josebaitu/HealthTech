@@ -1,6 +1,7 @@
 package com.example.healthtech.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,19 +39,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.healthtech.data.MessageData
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 
 @Composable
 fun ChatDetailScreen(navController: NavController, mainViewModel: MainViewModel, chatId: String, viewModel: ChatDetailViewModel = viewModel()) {
     val myId = mainViewModel.userProfile?.uuid ?: ""
     val isDoctor = mainViewModel.userRole == "doctor"
-    var messageText by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
     val chatName = viewModel.chatInfo?.let {
         if (isDoctor) it.patientName else "Dr. ${it.doctorName}"
     } ?: "Cargando..."
 
+    var messageText by remember { mutableStateOf("") }
+
     LaunchedEffect(chatId) {
         viewModel.loadChatData(chatId)
         viewModel.takeMessages(chatId)
+    }
+
+    LaunchedEffect(viewModel.messages.size) {
+        if (viewModel.messages.isNotEmpty()) {
+            listState.animateScrollToItem(viewModel.messages.size - 1)
+        }
     }
 
     Scaffold(
@@ -72,6 +82,7 @@ fun ChatDetailScreen(navController: NavController, mainViewModel: MainViewModel,
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp),
+                state = listState,
                 reverseLayout = false
             ) {
                 items(viewModel.messages) { message ->
