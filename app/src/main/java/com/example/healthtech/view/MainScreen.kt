@@ -174,7 +174,7 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel = viewMode
                 item { Spacer(modifier = Modifier.height(20.dp)) }
 
                 item {
-                    CardIA(onClick = { /*TODO: Navegacion al chat con la IA*/ })
+                    CardIA(onClick = { navController.navigate(Routes.ChatIA) })
                 }
 
                 item { Spacer(modifier = Modifier.height(80.dp)) }
@@ -343,7 +343,7 @@ fun CardIA(onClick: () -> Unit) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("Asistente Inteligente", color = Color.White, fontWeight = FontWeight.Bold)
-                Text("Analiza tus informes de IA", color = Color.White.copy(alpha = 0.8f))
+                Text("Solicita ayuda a nuestra IA", color = Color.White.copy(alpha = 0.8f))
             }
             Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White)
         }
