@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -20,6 +23,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        val localPropertiesFile = project.rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(FileInputStream(localPropertiesFile))
+        }
+
+        val openAiKey = properties.getProperty("OPENAI_API_KEY") ?: ""
+
+        buildConfigField("String", "OPENAI_API_KEY", "\"$openAiKey\"")
     }
 
     buildTypes {
@@ -37,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -70,4 +84,12 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    // 1. Forzamos la versión más reciente del SDK de Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    // 2. Necesitamos esta librería para que NO falle al leer el JSON de Google
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // 3. Opcional: Si usas BOM, asegúrate de que sea reciente
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
 }

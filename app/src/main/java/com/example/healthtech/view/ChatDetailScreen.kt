@@ -137,28 +137,3 @@ fun ChatDetailScreen(navController: NavController, mainViewModel: MainViewModel,
         }
     }
 }
-
-@Composable
-fun MessageBubble(message: MessageData, isMine: Boolean) {
-    val alignment = if (isMine) Alignment.End else Alignment.Start
-    val color = if (isMine) MaterialTheme.colorScheme.primary else Color.LightGray
-    val textColor = if (isMine) Color.White else Color.Black
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = alignment
-    ) {
-        Surface(
-            color = color,
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.padding(vertical = 4.dp).widthIn(max = 280.dp)
-        ) {
-            Text(
-                text = message.text,
-                modifier = Modifier.padding(12.dp),
-                color = textColor
-            )
-        }
-    }
-}

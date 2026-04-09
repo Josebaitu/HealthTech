@@ -63,7 +63,10 @@ fun AppNavigation() {
         }
 
         composable(Routes.ChatIA) {
-            ChatIAScreen(navController = navController)
+            ChatIAScreen(
+                navController = navController,
+                mainViewModel = mainViewModel
+            )
         }
 
         composable(Routes.ChatMed) {
