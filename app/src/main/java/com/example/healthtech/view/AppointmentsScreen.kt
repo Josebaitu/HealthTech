@@ -33,12 +33,16 @@ import com.example.healthtech.data.AppointmentData
 import com.example.healthtech.viewmodel.AppointmentsViewModel
 import com.example.healthtech.viewmodel.MainViewModel
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.healthtech.navigation.Routes
+import kotlinx.serialization.descriptors.PrimitiveKind
 
 @Composable
 fun AppointmentsScreen(navController: NavController, mainViewModel: MainViewModel, viewModel: AppointmentsViewModel = viewModel()) {
@@ -73,7 +77,20 @@ fun AppointmentsScreen(navController: NavController, mainViewModel: MainViewMode
                 showBackButton = false
             )
         },
-        bottomBar = { CustomHealthTechBottomBar(navController) }
+        bottomBar = { CustomHealthTechBottomBar(navController) },
+        floatingActionButton = {
+            if (!isDoctor) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Routes.MainView)
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Pedir cita nueva")
+                }
+            }
+        }
     ) { padding ->
         if (viewModel.isLoading) {
             Box(
