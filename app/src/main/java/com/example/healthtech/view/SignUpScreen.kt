@@ -140,6 +140,8 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
             modifier = Modifier.align(Alignment.Start)
         )
 
+        Spacer(modifier = Modifier.height(24.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -157,7 +159,7 @@ fun SignUpScreen(navController: NavController, viewModel: SignUpViewModel = view
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         if (viewModel.errorMessage.isNotEmpty()) {
             Text(
